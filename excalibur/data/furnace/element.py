@@ -86,3 +86,42 @@ class Commit(Element):
 class CommitAction(Element):
     def __init__(self):
         super().__init__()
+
+
+class Issue(Element):
+    def __init__(self):
+        super().__init__()
+
+
+class IssueAssignee(Element):
+    def __init__(self):
+        super().__init__()
+
+
+class IssueComment(Element):
+    def __init__(self):
+        super().__init__()
+
+
+class IssueCommentReaction(Element):
+    def __init__(self):
+        super().__init__()
+
+
+class User(Element):
+    def __init__(self, username=None, email=None, name=None):
+        super().__init__()
+        self.data = {}
+        self.data['username'] = username
+        self.data['email'] = email
+        self.data['name'] = name
+
+
+class Committer(User):
+    def __init__(self, username=None, email=None, name=None):
+        super().__init__(username, email, name)
+
+
+class CommitAuthor(User):
+    def __init__(self, username=None, email=None, name=None):
+        super().__init__(username, email, name)

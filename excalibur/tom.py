@@ -24,9 +24,18 @@ from perceval.backends.core.git import CATEGORY_COMMIT
 from excalibur.hammers.git_commit import GitCommitHammer
 
 
+from perceval.backends.core.git import (Git, CATEGORY_COMMIT)
+from perceval.backends.core.github import (GitHub, CATEGORY_ISSUE)
+
+from excalibur.hammers.git_commit import GitCommitHammer
+from excalibur.hammers.github_issue import GitHubIssueHammer
+
+
 def find_hammer(raw_data, raw_metadata):
-    if raw_metadata['category'] == CATEGORY_COMMIT and raw_metadata['backend_name'] == 'Git':
+    if raw_metadata['category'] == CATEGORY_COMMIT and raw_metadata['backend_name'] == Git.__qualname__:
         hammer = GitCommitHammer(raw_data, raw_metadata)
+    elif raw_metadata['category'] == CATEGORY_ISSUE and raw_metadata['backend_name'] == GitHub.__qualname__:
+        hammer = GitHubIssueHammer(raw_data, raw_metadata)
     else:
         raise NotImplementedError("Hammer not found")
 
@@ -44,7 +53,7 @@ class Tom:
             elements = hammer.smash()
             for elem in elements:
                 elem = hammer.datemize(elem)
-                elem = hammer.identitize(elem)
+                # elem = hammer.identitize(elem)
                 elem = hammer.modelize(elem)
                 elem = hammer.metadata(elem)
                 yield elem
