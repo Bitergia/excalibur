@@ -30,7 +30,7 @@ from excalibur.data.furnace.element import (ElementMetadata,
 from .hammer import Hammer
 
 
-class GitCommitHammer(Hammer):
+class GitHubIssueHammer(Hammer):
 
     def smash(self):
         author_commit = self.__parse_identity(self.raw_data["Author"])
