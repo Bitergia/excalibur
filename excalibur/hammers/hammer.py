@@ -19,6 +19,9 @@
 #     Valerio Cosentino <valcos@bitergia.com>
 #
 
+from copy import deepcopy
+import hashlib
+
 
 class Hammer:
 
@@ -32,7 +35,7 @@ class Hammer:
     def datemize(self, element):
         return element
 
-    def identitize(self, element):
+    def unify(self, element):
         return element
 
     def modelize(self, element):
@@ -57,3 +60,16 @@ class Hammer:
             'arthur_job_id': None
         }
         return furnace_metadata
+
+    @staticmethod
+    def copy_data(data):
+        replica = deepcopy(data)
+        return replica
+
+    def create_uuid(self, *args):
+        s = ':'.join(str(a) for a in args)
+
+        sha1 = hashlib.sha1(s.encode('utf-8', errors='surrogateescape'))
+        uuid_sha1 = sha1.hexdigest()
+
+        return uuid_sha1

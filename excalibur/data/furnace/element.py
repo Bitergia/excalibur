@@ -20,16 +20,12 @@
 #     Santiago Dueñas <sduenas@bitergia.com>
 #
 
-import dateutil
 import json
-from grimoirelab.toolkit.datetime import str_to_datetime, datetime_utcnow
 
 
 def json_date_handler(obj):
     """Handle dates in JSON for beautifying purposes"""
-    if isinstance(obj, dateutil.tz.tzoffset):
-        return str(dateutil.tz.tzoffset)
-    elif hasattr(obj, 'isoformat'):
+    if hasattr(obj, 'isoformat'):
         return obj.isoformat()
     else:
         return str(obj)
@@ -52,19 +48,36 @@ class ElementMetadata:
         self.arthur_job_id = None
         # TODO: check self.fingerprint = None
 
-    def __str__(self):
-        return str(self.__dict__)
+    def to_dict(self):
+        obj = {
+            'uuid': self.uuid,
+            'parent_uuid': self.parent_uuid,
+            'raw_uuid': self.raw_uuid,
+            'perceval_updated_on_ts': self.perceval_updated_on_ts,
+            'model_version': self.model_version,
+            'type': self.type,
+            'subtype': self.subtype,
+            'origin': self.origin,
+            'tag': self.tag,
+            'backend_version': self.backend_version,
+            'retrieval_ts': self.retrieval_ts,
+            'processed_ts': self.processed_ts.isoformat(),
+            'arthur_job_id': self.arthur_job_id
+        }
+
+        return obj
 
 
 class Element:
-    def __init__(self):
-        self.metadata = None
-        self.data = None
+    def __init__(self, **kwargs):
+        self.metadata = {}
+        self.data = {}
         self.data_ext = {}
+        self.parent_ref = None
 
     def __str__(self):
         obj = {
-            "metadata": self.metadata,
+            "metadata": self.metadata.to_dict(),
             "data": self.data,
             "data_ext": self.data_ext
         }
@@ -79,6 +92,7 @@ class Commit(Element):
         self.data_ext['removed_lines'] = None
         self.data_ext['changed_lines'] = None
         self.data_ext['num_files'] = None
+        self.data_ext['is_merge'] = None
 
 
 class CommitAction(Element):
@@ -104,17 +118,6 @@ class IssueReaction(Element):
 class User(Element):
     def __init__(self, username=None, email=None, name=None):
         super().__init__()
-        self.data = {}
         self.data['username'] = username
         self.data['email'] = email
         self.data['name'] = name
-
-
-class Committer(User):
-    def __init__(self, username=None, email=None, name=None):
-        super().__init__(username, email, name)
-
-
-class CommitAuthor(User):
-    def __init__(self, username=None, email=None, name=None):
-        super().__init__(username, email, name)

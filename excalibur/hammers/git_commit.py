@@ -25,8 +25,7 @@ from grimoirelab.toolkit.datetime import (datetime_utcnow,
 from excalibur.data.furnace.element import (ElementMetadata,
                                             CommitAction,
                                             Commit,
-                                            CommitAuthor,
-                                            Committer)
+                                            User)
 from .hammer import Hammer
 
 
@@ -37,12 +36,12 @@ class GitCommitHammer(Hammer):
         committer_commit = self.__parse_identity(self.raw_data["Commit"])
 
         commit = Commit()
-        author = CommitAuthor(**author_commit)
-        committer = Committer(**committer_commit)
-
-        commit.data = self.raw_data
+        commit.data = Hammer.copy_data(self.raw_data)
         commit.data['Author'] = author_commit
         commit.data['Commit'] = committer_commit
+
+        author = User(**author_commit)
+        committer = User(**committer_commit)
 
         yield commit
         yield committer
@@ -50,24 +49,32 @@ class GitCommitHammer(Hammer):
 
         for action in self.raw_data['files']:
             commit_action = CommitAction()
-            commit_action.data = action
+            commit_action.data = Hammer.copy_data(action)
             yield commit_action
 
     def datemize(self, element):
         if isinstance(element, Commit):
             return self.__datemize_commit(element)
-        elif isinstance(element, CommitAction) or isinstance(element, CommitAuthor) or isinstance(element, Committer):
+        elif isinstance(element, CommitAction) or isinstance(element, User):
             return element
         else:
             raise TypeError("Invalid type %s", type(element))
 
-    # def identitize(self, element):
-    #     if isinstance(element, Commit):
-    #         return self.__identitize_commit(element)
-    #     elif isinstance(element, CommitAction):
-    #         return element
-    #     else:
-    #         raise TypeError("Invalid type %s", type(element))
+    def unify(self, element):
+        if isinstance(element, Commit):
+            element.data.pop('files')
+            element.data['author'] = element.data.pop('Author')
+            element.data['author_date'] = element.data.pop('AuthorDate')
+            element.data['committer'] = element.data.pop('Commit')
+            element.data['commit_date'] = element.data.pop('CommitDate')
+            element.data['hash'] = element.data.pop('commit')
+            return element
+        elif isinstance(element, CommitAction):
+            element.data['added_lines'] = element.data.pop('added')
+            element.data['removed_lines'] = element.data.pop('removed')
+            return element
+        else:
+            return element
 
     def modelize(self, element):
         if isinstance(element, Commit):
@@ -78,6 +85,10 @@ class GitCommitHammer(Hammer):
                 [int(action['removed']) for action in action_files if 'removed' in action])
             element.data_ext['changed_lines'] = element.data_ext['added_lines'] + element.data_ext['removed_lines']
             element.data_ext['num_files'] = len(action_files)
+            element.data_ext['is_merge'] = len(self.raw_data['parents']) > 1
+            return element
+        elif isinstance(element, CommitAction):
+            element.data_ext['changed_lines'] = int(element.data['added']) + int(element.data['removed'])
             return element
         else:
             return element
@@ -109,11 +120,15 @@ class GitCommitHammer(Hammer):
             element.metadata.uuid = self.raw_metadata['uuid']
         elif isinstance(element, CommitAction):
             element.metadata.parent_uuid = self.raw_metadata['uuid']
-            element.metadata.uuid = element.metadata.parent_uuid + element.data['file']
-        elif isinstance(element, Committer) or isinstance(element, CommitAuthor):
+            element.metadata.uuid = Hammer.create_uuid(self.raw_metadata['uuid'],
+                                                       element.data['file'],
+                                                       element.data['action'])
+        elif isinstance(element, User):
             element.metadata.parent_uuid = self.raw_metadata['uuid']
-            element.metadata.uuid = element.metadata.parent_uuid + str(element.data['username']) + \
-                                    str(element.data['email']) + str(element.data['name'])
+            element.metadata.uuid = Hammer.create_uuid(self.raw_metadata['uuid'],
+                                                       element.data['username'],
+                                                       element.data['email'],
+                                                       element.data['name'])
         else:
             raise TypeError("Invalid type %s", type(element))
 
@@ -124,15 +139,14 @@ class GitCommitHammer(Hammer):
         author_date = str_to_datetime(data['AuthorDate'])
         commit_date = str_to_datetime(data['CommitDate'])
 
-        # TODO: extract in a better way this
         author_date_processed = {
             'date': author_date.timestamp(),
-            'tz': author_date.tzinfo
+            'tz': author_date.tzinfo._offset.total_seconds()
         }
 
         commmit_date_processed = {
             'date': commit_date.timestamp(),
-            'tz': commit_date.tzinfo
+            'tz': commit_date.tzinfo._offset.total_seconds()
         }
 
         data['AuthorDate'] = author_date_processed
@@ -140,16 +154,8 @@ class GitCommitHammer(Hammer):
 
         return element
 
-    # def __identitize_commit(self, element):
-    #     data = element.data
-    #     author = self.__parse_identity(data['Author'])
-    #     committer = self.__parse_identity(data['Commit'])
-    #     data['Author'] = author
-    #     data['Commit'] = committer
-    #
-    #     return element
-
-    def __parse_identity(self, field):
+    @staticmethod
+    def __parse_identity(field):
         # John Smith <john.smith@bitergia.com>
         identity = {}
 

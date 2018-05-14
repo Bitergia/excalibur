@@ -19,14 +19,9 @@
 #     Valerio Cosentino <valcos@bitergia.com>
 #
 
-from perceval.backends.core.git import CATEGORY_COMMIT
-
-from excalibur.hammers.git_commit import GitCommitHammer
-
 
 from perceval.backends.core.git import (Git, CATEGORY_COMMIT)
 from perceval.backends.core.github import (GitHub, CATEGORY_ISSUE)
-
 from excalibur.hammers.git_commit import GitCommitHammer
 from excalibur.hammers.github_issue import GitHubIssueHammer
 
@@ -53,7 +48,7 @@ class Tom:
             elements = hammer.smash()
             for elem in elements:
                 elem = hammer.datemize(elem)
-                # elem = hammer.identitize(elem)
                 elem = hammer.modelize(elem)
+                elem = hammer.unify(elem)
                 elem = hammer.metadata(elem)
                 yield elem
