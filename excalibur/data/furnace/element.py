@@ -26,8 +26,7 @@ from grimoirelab.toolkit.datetime import str_to_datetime, datetime_utcnow
 
 
 def json_date_handler(obj):
-    """ Handle dates in JSON for beautifying purposes
-    """
+    """Handle dates in JSON for beautifying purposes"""
     if isinstance(obj, dateutil.tz.tzoffset):
         return str(dateutil.tz.tzoffset)
     elif hasattr(obj, 'isoformat'):
@@ -61,7 +60,7 @@ class Element:
     def __init__(self):
         self.metadata = None
         self.data = None
-        self.data_ext = None
+        self.data_ext = {}
 
     def __str__(self):
         obj = {
@@ -76,7 +75,6 @@ class Element:
 class Commit(Element):
     def __init__(self):
         super().__init__()
-        self.data_ext = {}
         self.data_ext['added_lines'] = None
         self.data_ext['removed_lines'] = None
         self.data_ext['changed_lines'] = None
@@ -93,17 +91,12 @@ class Issue(Element):
         super().__init__()
 
 
-class IssueAssignee(Element):
-    def __init__(self):
-        super().__init__()
-
-
 class IssueComment(Element):
     def __init__(self):
         super().__init__()
 
 
-class IssueCommentReaction(Element):
+class IssueReaction(Element):
     def __init__(self):
         super().__init__()
 

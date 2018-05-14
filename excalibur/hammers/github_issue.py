@@ -23,62 +23,65 @@ from grimoirelab.toolkit.datetime import (datetime_utcnow,
                                           str_to_datetime)
 
 from excalibur.data.furnace.element import (ElementMetadata,
-                                            CommitAction,
-                                            Commit,
-                                            CommitAuthor,
-                                            Committer)
+                                            Issue,
+                                            IssueComment,
+                                            IssueReaction,
+                                            User)
 from .hammer import Hammer
 
 
 class GitHubIssueHammer(Hammer):
 
     def smash(self):
-        author_commit = self.__parse_identity(self.raw_data["Author"])
-        committer_commit = self.__parse_identity(self.raw_data["Commit"])
+        issue = Issue()
+        issue.data = self.raw_data
 
-        commit = Commit()
-        author = CommitAuthor(**author_commit)
-        committer = Committer(**committer_commit)
+        assignees = self.raw_data['assignees_data']
+        assignees_lst = []
+        for assignee in assignees:
+            assignee_identity = self.__parse_identity(assignee)
+            assignees_lst.append(assignee_identity)
+            issue.data['assignees_identities'] = assignees_lst
 
-        commit.data = self.raw_data
+        author = self.__parse_identity(self.raw_data['user_data'])
+        issue.data['author_identity'] = author
+        yield issue
 
-        yield commit
-        yield committer
-        yield author
+        reactions_raw = self.raw_data['reactions_data']
+        yield from self.__smash_reactions(reactions_raw, self.raw_metadata['uuid'])
 
-        for action in self.raw_data['files']:
-            commit_action = CommitAction()
-            commit_action.data = action
-            yield commit_action
+        comments_raw = self.raw_data['comments_data']
+        for comment_raw in comments_raw:
+            comment = IssueComment()
+            comment.data = comment_raw
+            commenter_identity = self.__parse_identity(comment_raw['user_data'])
+            comment.data['commenter_identity'] = commenter_identity
+            yield comment
+
+            reactions_raw = comment_raw["reactions_data"]
+            yield from self.__smash_reactions(reactions_raw, comment.data['id'])
+
+    def __smash_reactions(self, reactions_raw, parent_id):
+        for reaction_raw in reactions_raw:
+            reaction = IssueReaction()
+            reaction.data = reaction_raw
+            reaction.data_ext['parent_id'] = parent_id
+            reactioner_identity = self.__parse_identity(reaction_raw['user_data'])
+            reaction.data['reactioner_identity'] = reactioner_identity
+            yield reaction
 
     def datemize(self, element):
-        if isinstance(element, Commit):
-            return self.__datemize_commit(element)
-        elif isinstance(element, CommitAction) or isinstance(element, CommitAuthor) or isinstance(element, Committer):
-            return element
-        else:
-            raise TypeError("Invalid type %s", type(element))
 
-    # def identitize(self, element):
-    #     if isinstance(element, Commit):
-    #         return self.__identitize_commit(element)
-    #     elif isinstance(element, CommitAction):
-    #         return element
-    #     else:
-    #         raise TypeError("Invalid type %s", type(element))
+        created_at = element.data['created_at']
+        element.data['created_at'] = str_to_datetime(created_at)
+
+        if not isinstance(element, IssueReaction):
+            updated_at = element.data['updated_at']
+            element.data['updated_at'] = str_to_datetime(updated_at)
+        return element
 
     def modelize(self, element):
-        if isinstance(element, Commit):
-            action_files = self.raw_data['files']
-            element.data_ext['added_lines'] = sum(
-                [int(action['added']) for action in action_files if 'added' in action])
-            element.data_ext['removed_lines'] = sum(
-                [int(action['removed']) for action in action_files if 'removed' in action])
-            element.data_ext['changed_lines'] = element.data_ext['added_lines'] + element.data_ext['removed_lines']
-            element.data_ext['num_files'] = len(action_files)
-            return element
-        else:
-            return element
+        return element
 
     def metadata(self, element):
         metadata = ElementMetadata()
@@ -103,64 +106,29 @@ class GitHubIssueHammer(Hammer):
         return element
 
     def uuid(self, element):
-        if isinstance(element, Commit):
+        if isinstance(element, Issue):
             element.metadata.uuid = self.raw_metadata['uuid']
-        elif isinstance(element, CommitAction):
+        elif isinstance(element, IssueComment):
             element.metadata.parent_uuid = self.raw_metadata['uuid']
-            element.metadata.uuid = element.metadata.parent_uuid + element.data['file']
-        elif isinstance(element, Committer) or isinstance(element, CommitAuthor):
-            element.metadata.parent_uuid = self.raw_metadata['uuid']
-            element.metadata.uuid = element.metadata.parent_uuid + str(element.data['username']) + \
-                                    str(element.data['email']) + str(element.data['name'])
+            element.metadata.uuid = element.metadata.parent_uuid + str(element.data['id'])
+        elif isinstance(element, IssueReaction):
+            element.metadata.parent_uuid = element.data_ext.pop('parent_id')
+            # FIXME: metadata parent_uuid is the comment id not a real uuid
+            element.metadata.uuid = str(element.metadata.parent_uuid) + str(element.data['id'])
         else:
             raise TypeError("Invalid type %s", type(element))
 
         return element
 
-    def __datemize_commit(self, element):
-        data = element.data
-        author_date = str_to_datetime(data['AuthorDate'])
-        commit_date = str_to_datetime(data['CommitDate'])
-
-        # TODO: extract in a better way this
-        author_date_processed = {
-            'date': author_date.timestamp(),
-            'tz': author_date.tzinfo
-        }
-
-        commmit_date_processed = {
-            'date': commit_date.timestamp(),
-            'tz': commit_date.tzinfo
-        }
-
-        data['AuthorDate'] = author_date_processed
-        data['CommitDate'] = commmit_date_processed
-
-        return element
-
-    # def __identitize_commit(self, element):
-    #     data = element.data
-    #     author = self.__parse_identity(data['Author'])
-    #     committer = self.__parse_identity(data['Commit'])
-    #     data['Author'] = author
-    #     data['Commit'] = committer
-    #
-    #     return element
-
-    def __parse_identity(self, field):
+    def __parse_identity(self, data):
         # John Smith <john.smith@bitergia.com>
         identity = {}
 
-        git_user = field  # by default a specific user dict is expected
+        email = data['email'] if 'email' in data else None
+        name = data['name'] if 'name' in data else None
+        username = data['login'] if 'login' in data else None
 
-        fields = git_user.split("<")
-        name = fields[0]
-        name = name.strip()  # Remove space between user and email
-        email = None
-        if len(fields) > 1:
-            email = git_user.split("<")[1][:-1]
-
-        identity['username'] = None
+        identity['username'] = username
         identity['email'] = email
         identity['name'] = name if name else None
 

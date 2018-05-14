@@ -41,6 +41,8 @@ class GitCommitHammer(Hammer):
         committer = Committer(**committer_commit)
 
         commit.data = self.raw_data
+        commit.data['Author'] = author_commit
+        commit.data['Commit'] = committer_commit
 
         yield commit
         yield committer
