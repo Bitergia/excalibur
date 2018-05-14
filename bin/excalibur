@@ -23,7 +23,8 @@
 import json
 import sys
 
-from excalibur.process import process
+from excalibur.tom import Tom
+
 
 def read_items():
     buffer = None
@@ -38,16 +39,20 @@ def read_items():
         else:
             buffer += line
 
+
 def read_file(filename, mode='r'):
     with open(filename, mode) as f:
         content = f.read()
     content = json.loads(content)
     return content
 
+
 def main():
     raw_items = read_file(sys.argv[1])
-    for item in process(raw_items):
+    tom = Tom()
+    for item in tom.process(raw_items):
         print(item)
+
 
 if __name__ == '__main__':
     try:
