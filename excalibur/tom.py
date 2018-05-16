@@ -19,12 +19,18 @@
 #     Valerio Cosentino <valcos@bitergia.com>
 #
 
+from copy import deepcopy
+import json
+import logging
+
 
 from perceval.backends.core.git import (Git, CATEGORY_COMMIT)
 from perceval.backends.core.github import (GitHub,
                                            CATEGORY_ISSUE as github_cat)
 from perceval.backends.core.redmine import (Redmine,
                                             CATEGORY_ISSUE as redmine_cat)
+
+from excalibur.errors import TomError
 from excalibur.hammers.git_commit import GitCommitHammer
 from excalibur.hammers.github_issue import GitHubIssueHammer
 from excalibur.hammers.redmine_issue import RedmineIssueHammer
@@ -43,10 +49,14 @@ def find_hammer(raw_data, raw_metadata):
     return hammer
 
 
+logger = logging.getLogger(__name__)
+
+
 class Tom:
 
     def process(self, raw_items):
         for raw in raw_items:
+            num_elements = 0
             raw_data = raw.pop('data')
             raw_metadata = raw
 
@@ -57,4 +67,16 @@ class Tom:
                 elem = hammer.modelize(elem)
                 elem = hammer.unify(elem)
                 elem = hammer.metadata(elem)
+                elem = hammer.verify(elem)
+                num_elements += 1
                 yield elem
+
+            if hammer.num_elements != num_elements:
+                failed_raw = deepcopy(raw)
+                failed_raw['data'] = raw_data
+                msg = "Lost elements, %s/%s generated. Raw item %s" % (num_elements,
+                                                                       hammer.num_elements,
+                                                                       json.dumps(failed_raw,
+                                                                                  sort_keys=True,
+                                                                                  indent=4))
+                raise TomError(msg=msg)
