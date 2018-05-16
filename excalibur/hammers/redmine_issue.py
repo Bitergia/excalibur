@@ -30,10 +30,13 @@ from .hammer import Hammer
 class RedmineIssueHammer(Hammer):
 
     def smash(self):
+        self.num_elements += 1
         issue = Issue()
         issue.data = Hammer.copy_data(self.raw_data)
+        issue.parent_uuid = self.raw_metadata['uuid']
         issue.uuid = self.raw_metadata['uuid']
 
+        self.num_elements += 1
         author = self.__parse_identity(self.raw_data['author_data'])
         author = User(**author)
         author.parent_uuid = issue.uuid
@@ -43,6 +46,7 @@ class RedmineIssueHammer(Hammer):
         yield author
 
         if 'assigned_to_data' in self.raw_data:
+            self.num_elements += 1
             assignee = self.__parse_identity(self.raw_data['assigned_to_data'])
             assignee = User(**assignee)
             assignee.parent_uuid = issue.uuid
@@ -55,11 +59,14 @@ class RedmineIssueHammer(Hammer):
 
         journals_raw = self.raw_data['journals']
         for journal_raw in journals_raw:
+            self.num_elements += 1
             journal = IssueJournal()
             journal.data = Hammer.copy_data(journal_raw)
             journal.parent_uuid = issue.uuid
             journal.uuid = Hammer.create_uuid(journal.parent_uuid,
                                               journal.data['id'])
+
+            self.num_elements += 1
             actor = self.__parse_identity(journal_raw['user_data'])
             actor = User(**actor)
             actor.parent_uuid = journal.uuid

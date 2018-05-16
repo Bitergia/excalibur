@@ -30,18 +30,20 @@ from .hammer import Hammer
 class GitCommitHammer(Hammer):
 
     def smash(self):
-        author_commit = self.__parse_identity(self.raw_data["Author"])
-        committer_commit = self.__parse_identity(self.raw_data["Commit"])
-
+        self.num_elements += 1
         commit = Commit()
         commit.data = Hammer.copy_data(self.raw_data)
-        commit.data['Author'] = author_commit
-        commit.data['Commit'] = committer_commit
+        commit.parent_uuid = self.raw_metadata['uuid']
         commit.uuid = self.raw_metadata['uuid']
 
+        self.num_elements += 1
+        author_commit = self.__parse_identity(self.raw_data["Author"])
         author = User(**author_commit)
         author.parent_uuid = commit.uuid
         author.uuid = Hammer.create_uuid(author.parent_uuid, author.digest())
+
+        self.num_elements += 1
+        committer_commit = self.__parse_identity(self.raw_data["Commit"])
         committer = User(**committer_commit)
         committer.parent_uuid = commit.uuid
         committer.uuid = Hammer.create_uuid(committer.parent_uuid, committer.digest())
@@ -54,6 +56,7 @@ class GitCommitHammer(Hammer):
         yield author
 
         for action in self.raw_data['files']:
+            self.num_elements += 1
             commit_action = CommitAction()
             commit_action.data = Hammer.copy_data(action)
             commit_action.parent_uuid = self.raw_metadata['uuid']

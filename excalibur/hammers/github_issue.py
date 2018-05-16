@@ -31,10 +31,13 @@ from .hammer import Hammer
 class GitHubIssueHammer(Hammer):
 
     def smash(self):
+        self.num_elements += 1
         issue = Issue()
         issue.data = Hammer.copy_data(self.raw_data)
+        issue.parent_uuid = self.raw_metadata['uuid']
         issue.uuid = self.raw_metadata['uuid']
 
+        self.num_elements += 1
         author = self.__parse_identity(self.raw_data['user_data'])
         author = User(**author)
         author.parent_uuid = issue.uuid
@@ -46,6 +49,7 @@ class GitHubIssueHammer(Hammer):
         assignees_raw = self.raw_data['assignees_data']
         assignees = []
         for assignee_raw in assignees_raw:
+            self.num_elements += 1
             assignee = self.__parse_identity(assignee_raw)
             assignee = User(**assignee)
             assignee.parent_uuid = issue.uuid
@@ -61,12 +65,14 @@ class GitHubIssueHammer(Hammer):
 
         comments_raw = self.raw_data['comments_data']
         for comment_raw in comments_raw:
+            self.num_elements += 1
             comment = IssueComment()
             comment.data = Hammer.copy_data(comment_raw)
             comment.parent_uuid = issue.uuid
             comment.uuid = Hammer.create_uuid(comment.parent_uuid,
                                               comment.data['id'])
 
+            self.num_elements += 1
             commenter = self.__parse_identity(comment_raw['user_data'])
             commenter = User(**commenter)
             commenter.parent_uuid = comment.uuid
@@ -127,12 +133,14 @@ class GitHubIssueHammer(Hammer):
 
     def __smash_reactions(self, reactions_raw, parent_uuid):
         for reaction_raw in reactions_raw:
+            self.num_elements += 1
             reaction = IssueReaction()
             reaction.data = Hammer.copy_data(reaction_raw)
             reaction.parent_uuid = parent_uuid
             reaction.uuid = Hammer.create_uuid(reaction.parent_uuid,
                                                reaction.data['id'])
 
+            self.num_elements += 1
             actor = self.__parse_identity(reaction_raw['user_data'])
             actor = User(**actor)
             actor.parent_uuid = reaction.uuid
@@ -144,7 +152,6 @@ class GitHubIssueHammer(Hammer):
             yield actor
 
     def __parse_identity(self, data):
-        # John Smith <john.smith@bitergia.com>
         identity = {}
 
         email = data['email'] if 'email' in data else None
