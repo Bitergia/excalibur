@@ -22,6 +22,9 @@
 from copy import deepcopy
 import hashlib
 
+from grimoirelab.toolkit.datetime import datetime_utcnow
+from excalibur.data.furnace.element import ElementMetadata
+
 
 class Hammer:
 
@@ -42,10 +45,24 @@ class Hammer:
         return element
 
     def metadata(self, element):
-        raise NotImplementedError("metadata not defined")
+        metadata = ElementMetadata()
+        furnace_metadata = self.extract_metadata()
 
-    def uuid(self, element):
-        raise NotImplementedError("uuid not defined")
+        metadata.raw_uuid = furnace_metadata['raw_uuid']
+        metadata.perceval_updated_on_ts = furnace_metadata['perceval_updated_on_ts']
+        metadata.subtype = furnace_metadata['subtype']
+        metadata.origin = furnace_metadata['origin']
+        metadata.tag = furnace_metadata['tag']
+        metadata.backend_version = furnace_metadata['backend_version']
+        metadata.retrieval_ts = furnace_metadata['retrieval_ts']
+        metadata.arthur_job_id = furnace_metadata['arthur_job_id']
+
+        metadata.processed_ts = datetime_utcnow()
+        metadata.model_version = '0.1.0'
+        metadata.type = type(element).__name__
+        element.metadata = metadata
+
+        return element
 
     def extract_metadata(self):
         furnace_metadata = {
@@ -66,7 +83,8 @@ class Hammer:
         replica = deepcopy(data)
         return replica
 
-    def create_uuid(self, *args):
+    @staticmethod
+    def create_uuid(*args):
         s = ':'.join(str(a) for a in args)
 
         sha1 = hashlib.sha1(s.encode('utf-8', errors='surrogateescape'))
