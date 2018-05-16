@@ -21,14 +21,21 @@
 
 from copy import deepcopy
 import hashlib
+import logging
 
 from grimoirelab.toolkit.datetime import datetime_utcnow
+
+from excalibur.errors import HammerError
 from excalibur.data.furnace.element import ElementMetadata
+
+
+logger = logging.getLogger(__name__)
 
 
 class Hammer:
 
     def __init__(self, raw_data, raw_metadata):
+        self.num_elements = 0
         self.raw_data = raw_data
         self.raw_metadata = raw_metadata
 
@@ -38,10 +45,10 @@ class Hammer:
     def datemize(self, element):
         return element
 
-    def unify(self, element):
+    def modelize(self, element):
         return element
 
-    def modelize(self, element):
+    def unify(self, element):
         return element
 
     def metadata(self, element):
@@ -61,6 +68,17 @@ class Hammer:
         metadata.model_version = '0.1.0'
         metadata.type = type(element).__name__
         element.metadata = metadata
+
+        return element
+
+    def verify(self, element):
+        if not element.uuid:
+            msg = "No uuid for element %s" % str(element)
+            raise HammerError(cause=msg)
+
+        if not element.parent_uuid:
+            msg = "No parent_uuid for element %s" % str(element)
+            raise HammerError(cause=msg)
 
         return element
 
