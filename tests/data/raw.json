@@ -951,4 +951,317 @@
     "timestamp": 1518165230.343396,
     "updated_on": 1454328801.0,
     "uuid": "58c073fd2a388c44043b9cc197c73c5c540270ac"
+},
+{
+    "backend_name": "Redmine",
+    "backend_version": "0.7.0",
+    "category": "issue",
+    "data": {
+        "attachments": [],
+        "author": {
+            "id": 3,
+            "name": "Alvaro del Castillo"
+        },
+        "author_data": {
+            "created_on": "2011-12-08T06:25:29.000Z",
+            "firstname": "Generic",
+            "id": 3,
+            "last_login_on": "2016-10-31T09:55:00.000Z",
+            "lastname": "User",
+            "login": "generic",
+            "mail": "generic@example.com",
+            "status": 1
+        },
+        "changesets": [],
+        "closed_on": "2011-12-08T09:51:07.000Z",
+        "created_on": "2011-12-08T09:51:07.000Z",
+        "description": "WARNING: max attr value size (1024) is smaller than osd_max_object_name_len (2048).",
+        "done_ratio": 0,
+        "id": 17420,
+        "journals": [
+            {
+                "created_on": "2011-12-08T17:57:55.000Z",
+                "details": [
+                    {
+                        "name": "parent_id",
+                        "new_value": "31",
+                        "property": "attr"
+                    }
+                ],
+                "id": 32,
+                "notes": "",
+                "user": {
+                    "id": 3,
+                    "name": "Alvaro del Castillo"
+                },
+                "user_data": {
+                    "created_on": "2011-12-08T06:25:29.000Z",
+                    "firstname": "Generic",
+                    "id": 3,
+                    "last_login_on": "2016-10-31T09:55:00.000Z",
+                    "lastname": "User",
+                    "login": "generic",
+                    "mail": "generic@example.com",
+                    "status": 1
+                }
+            }
+        ],
+        "parent": {
+            "id": 31
+        },
+        "priority": {
+            "id": 4,
+            "name": "Normal"
+        },
+        "project": {
+            "id": 1,
+            "name": "Global"
+        },
+        "spent_hours": 1.0,
+        "start_date": "2011-12-08",
+        "status": {
+            "id": 5,
+            "name": "Cerrada"
+        },
+        "subject": "Second Issue",
+        "tracker": {
+            "id": 2,
+            "name": "Tareas"
+        },
+        "updated_on": "2011-12-08T17:57:55.000Z",
+        "watchers": []
+    },
+    "origin": "http://example.com",
+    "perceval_version": "0.9.10",
+    "tag": "http://example.com",
+    "timestamp": 1518165740.374755,
+    "updated_on": 1323367075.0,
+    "uuid": "c4aeb9e77fec8e4679caa23d4012e7cc36ae8b98"
+},{
+    "backend_name": "Redmine",
+    "backend_version": "0.7.0",
+    "category": "issue",
+    "data": {
+        "attachments": [],
+        "author": {
+            "id": 3,
+            "name": "Alvaro del Castillo"
+        },
+        "author_data": {
+            "created_on": "2011-12-08T06:25:29.000Z",
+            "firstname": "Generic",
+            "id": 3,
+            "last_login_on": "2016-10-31T09:55:00.000Z",
+            "lastname": "User",
+            "login": "generic",
+            "mail": "generic@example.com",
+            "status": 1
+        },
+        "changesets": [],
+        "closed_on": "2011-12-08T09:42:44.000Z",
+        "created_on": "2011-12-08T09:42:44.000Z",
+        "description": "",
+        "done_ratio": 100,
+        "id": 2,
+        "journals": [
+            {
+                "created_on": "2011-12-08T17:58:37.000Z",
+                "details": [
+                    {
+                        "name": "parent_id",
+                        "new_value": "31",
+                        "property": "attr"
+                    }
+                ],
+                "id": 35,
+                "notes": "",
+                "user": {
+                    "id": 3,
+                    "name": "Alvaro del Castillo"
+                },
+                "user_data": {
+                    "created_on": "2011-12-08T06:25:29.000Z",
+                    "firstname": "Generic",
+                    "id": 3,
+                    "last_login_on": "2016-10-31T09:55:00.000Z",
+                    "lastname": "User",
+                    "login": "generic",
+                    "mail": "generic@example.com",
+                    "status": 1
+                }
+            }
+        ],
+        "parent": {
+            "id": 31
+        },
+        "priority": {
+            "id": 4,
+            "name": "Normal"
+        },
+        "project": {
+            "id": 1,
+            "name": "Global"
+        },
+        "spent_hours": 1.0,
+        "start_date": "2011-12-08",
+        "status": {
+            "id": 5,
+            "name": "Cerrada"
+        },
+        "subject": "Erroneous WARNING: max attr value size (1024) is smaller than osd_max_object_name_len (2048).",
+        "tracker": {
+            "id": 2,
+            "name": "Tareas"
+        },
+        "updated_on": "2011-12-08T17:58:37.000Z",
+        "watchers": []
+    },
+    "origin": "http://example.com",
+    "perceval_version": "0.9.10",
+    "tag": "http://example.com",
+    "timestamp": 1518165740.378558,
+    "updated_on": 1323367117.0,
+    "uuid": "3c3d67925b108a37f88cc6663f7f7dd493fa818c"
+},{
+    "backend_name": "Redmine",
+    "backend_version": "0.7.0",
+    "category": "issue",
+    "data": {
+        "assigned_to": {
+            "id": 25,
+            "name": "Jes\u00fas Alonso"
+        },
+        "assigned_to_data": {
+            "created_on": "2011-12-08T06:25:29.000Z",
+            "firstname": "Generic",
+            "id": 25,
+            "last_login_on": "2016-10-31T09:55:00.000Z",
+            "lastname": "User",
+            "login": "generic",
+            "mail": "generic@example.com",
+            "status": 1
+        },
+        "attachments": [],
+        "author": {
+            "id": 24,
+            "name": "Quan Zhou"
+        },
+        "author_data": {
+            "created_on": "2011-12-08T06:25:29.000Z",
+            "firstname": "Generic",
+            "id": 24,
+            "last_login_on": "2016-10-31T09:55:00.000Z",
+            "lastname": "User",
+            "login": "generic",
+            "mail": "generic@example.com",
+            "status": 1
+        },
+        "changesets": [],
+        "closed_on": "2016-05-19T17:04:19.000Z",
+        "created_on": "2016-01-26T12:39:26.000Z",
+        "description": "Description",
+        "done_ratio": 0,
+        "id": 7311,
+        "journals": [
+            {
+                "created_on": "2016-03-21T12:02:13.000Z",
+                "details": [
+                    {
+                        "name": "subject",
+                        "new_value": "Data sources are not being updated",
+                        "old_value": "Data sources is not being updated",
+                        "property": "attr"
+                    },
+                    {
+                        "name": "description",
+                        "new_value": "New desc",
+                        "old_value": "Old desc",
+                        "property": "attr"
+                    },
+                    {
+                        "name": "status_id",
+                        "new_value": "1",
+                        "old_value": "5",
+                        "property": "attr"
+                    }
+                ],
+                "id": 45368,
+                "notes": "",
+                "user": {
+                    "id": 24,
+                    "name": "Quan Zhou"
+                },
+                "user_data": {
+                    "created_on": "2011-12-08T06:25:29.000Z",
+                    "firstname": "Generic",
+                    "id": 24,
+                    "last_login_on": "2016-10-31T09:55:00.000Z",
+                    "lastname": "User",
+                    "login": "generic",
+                    "mail": "generic@example.com",
+                    "status": 1
+                }
+            },
+            {
+                "created_on": "2016-07-26T09:11:49.000Z",
+                "details": [
+                    {
+                        "name": "description",
+                        "new_value": "Why",
+                        "old_value": "When",
+                        "property": "attr"
+                    },
+                    {
+                        "name": "status_id",
+                        "new_value": "1",
+                        "old_value": "3",
+                        "property": "attr"
+                    }
+                ],
+                "id": 47061,
+                "notes": "A lot of changes here",
+                "user": {
+                    "id": 24,
+                    "name": "Quan Zhou"
+                },
+                "user_data": {
+                    "created_on": "2011-12-08T06:25:29.000Z",
+                    "firstname": "Generic",
+                    "id": 24,
+                    "last_login_on": "2016-10-31T09:55:00.000Z",
+                    "lastname": "User",
+                    "login": "generic",
+                    "mail": "generic@example.com",
+                    "status": 1
+                }
+            }
+        ],
+        "priority": {
+            "id": 7,
+            "name": "Inmediata"
+        },
+        "project": {
+            "id": 91,
+            "name": "MAD"
+        },
+        "spent_hours": 0.5000000074505806,
+        "start_date": "2016-01-26",
+        "status": {
+            "id": 3,
+            "name": "Resuelta"
+        },
+        "subject": "Data sources are not being updated",
+        "tracker": {
+            "id": 1,
+            "name": "Errores"
+        },
+        "updated_on": "2016-07-27T08:17:07.000Z",
+        "watchers": []
+    },
+    "origin": "http://example.com",
+    "perceval_version": "0.9.10",
+    "tag": "http://example.com",
+    "timestamp": 1518165740.406415,
+    "updated_on": 1469607427.0,
+    "uuid": "4ab289ab60aee93a66e5490529799cf4a2b4d94c"
 }]
