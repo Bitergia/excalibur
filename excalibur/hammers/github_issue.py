@@ -19,13 +19,12 @@
 #     Valerio Cosentino <valcos@bitergia.com>
 #
 
-from grimoirelab.toolkit.datetime import (datetime_utcnow,
-                                          str_to_datetime)
+from grimoirelab.toolkit.datetime import str_to_datetime
 
-from excalibur.data.furnace.element import (ElementMetadata,
-                                            Issue,
+from excalibur.data.furnace.element import (Issue,
                                             IssueComment,
-                                            IssueReaction)
+                                            IssueReaction,
+                                            User)
 from .hammer import Hammer
 
 
@@ -34,44 +33,57 @@ class GitHubIssueHammer(Hammer):
     def smash(self):
         issue = Issue()
         issue.data = Hammer.copy_data(self.raw_data)
+        issue.uuid = self.raw_metadata['uuid']
+
+        author = self.__parse_identity(self.raw_data['user_data'])
+        author = User(**author)
+        author.parent_uuid = issue.uuid
+        author.uuid = Hammer.create_uuid(author.parent_uuid, author.digest())
+
+        issue.data['author_data'] = author.data
+        yield author
 
         assignees_raw = self.raw_data['assignees_data']
         assignees = []
         for assignee_raw in assignees_raw:
-            assignee_identity = self.__parse_identity(assignee_raw)
-            assignees.append(assignee_identity)
+            assignee = self.__parse_identity(assignee_raw)
+            assignee = User(**assignee)
+            assignee.parent_uuid = issue.uuid
+            assignee.uuid = Hammer.create_uuid(assignee.parent_uuid, assignee.digest())
+            assignees.append(assignee.data)
+            yield assignee
 
-        issue.data['assignees_identities'] = assignees
-
-        author = self.__parse_identity(self.raw_data['user_data'])
-        issue.data['author_identity'] = author
-
+        issue.data['assignees_data'] = assignees
         yield issue
 
         reactions_raw = self.raw_data['reactions_data']
-        yield from self.__smash_reactions(reactions_raw, self.raw_metadata['uuid'])
+        yield from self.__smash_reactions(reactions_raw, issue.uuid)
 
         comments_raw = self.raw_data['comments_data']
         for comment_raw in comments_raw:
             comment = IssueComment()
             comment.data = Hammer.copy_data(comment_raw)
-            commenter_identity = self.__parse_identity(comment_raw['user_data'])
-            comment.data['commenter_identity'] = commenter_identity
+            comment.parent_uuid = issue.uuid
+            comment.uuid = Hammer.create_uuid(comment.parent_uuid,
+                                              comment.data['id'])
+
+            commenter = self.__parse_identity(comment_raw['user_data'])
+            commenter = User(**commenter)
+            commenter.parent_uuid = comment.uuid
+            commenter.uuid = Hammer.create_uuid(commenter.parent_uuid, commenter.digest())
+
+            comment.data['user_data'] = commenter.data
+
             yield comment
+            yield commenter
 
             reactions_raw = comment_raw["reactions_data"]
-            yield from self.__smash_reactions(reactions_raw, comment.data['id'])
-
-    def __smash_reactions(self, reactions_raw, parent_ref):
-        for reaction_raw in reactions_raw:
-            reaction = IssueReaction()
-            reaction.data = Hammer.copy_data(reaction_raw)
-            reaction.parent_ref = parent_ref
-            reactioner_identity = self.__parse_identity(reaction_raw['user_data'])
-            reaction.data['reactioner_identity'] = reactioner_identity
-            yield reaction
+            yield from self.__smash_reactions(reactions_raw, comment.uuid)
 
     def datemize(self, element):
+        if isinstance(element, User):
+            return element
+
         created_at = element.data['created_at']
         element.data['created_at'] = str_to_datetime(created_at)
 
@@ -80,14 +92,12 @@ class GitHubIssueHammer(Hammer):
             element.data['updated_at'] = str_to_datetime(updated_at)
         return element
 
-    def modelize(self, element):
+    def unify(self, element):
         if isinstance(element, Issue):
             element.data.pop('assignee')
             element.data.pop('assignee_data')
             element.data.pop('assignees')
-            element.data.pop('assignees_data')
             element.data.pop('comments_data')
-            element.data.pop('reactions')
             element.data.pop('reactions_data')
             element.data.pop('user')
             element.data.pop('user_data')
@@ -95,72 +105,43 @@ class GitHubIssueHammer(Hammer):
             element.data.pop('events_url')
             element.data.pop('html_url')
             element.data.pop('labels_url')
-            element.data.pop('pull_request')
             element.data.pop('repository_url')
-            element.data.pop('url')
+            element.data.pop('pull_request')
+            element.data_ext['labels'] = element.data.pop('labels')
+            element.data_ext['reactions'] = element.data.pop('reactions')
+            element.data_ext['url'] = element.data.pop('url')
             return element
         elif isinstance(element, IssueComment):
             element.data.pop('html_url')
             element.data.pop('issue_url')
             element.data.pop('reactions')
             element.data.pop('reactions_data')
-            element.data.pop('url')
             element.data.pop('user')
-            element.data.pop('user_data')
+            element.data_ext['url'] = element.data.pop('url')
             return element
         elif isinstance(element, IssueReaction):
             element.data.pop('user')
-            element.data.pop('user_data')
             return element
         else:
             return element
 
-    def metadata(self, element):
-        metadata = ElementMetadata()
-        furnace_metadata = self.extract_metadata()
+    def __smash_reactions(self, reactions_raw, parent_uuid):
+        for reaction_raw in reactions_raw:
+            reaction = IssueReaction()
+            reaction.data = Hammer.copy_data(reaction_raw)
+            reaction.parent_uuid = parent_uuid
+            reaction.uuid = Hammer.create_uuid(reaction.parent_uuid,
+                                               reaction.data['id'])
 
-        metadata.raw_uuid = furnace_metadata['raw_uuid']
-        metadata.perceval_updated_on_ts = furnace_metadata['perceval_updated_on_ts']
-        metadata.subtype = furnace_metadata['subtype']
-        metadata.origin = furnace_metadata['origin']
-        metadata.tag = furnace_metadata['tag']
-        metadata.backend_version = furnace_metadata['backend_version']
-        metadata.retrieval_ts = furnace_metadata['retrieval_ts']
-        metadata.arthur_job_id = furnace_metadata['arthur_job_id']
+            actor = self.__parse_identity(reaction_raw['user_data'])
+            actor = User(**actor)
+            actor.parent_uuid = reaction.uuid
+            actor.uuid = Hammer.create_uuid(actor.parent_uuid, actor.digest())
 
-        metadata.processed_ts = datetime_utcnow()
-        metadata.model_version = '0.1.0'
-        metadata.type = type(element).__name__
-        element.metadata = metadata
+            reaction.data['user_data'] = actor.data
 
-        element = self.uuid(element)
-
-        return element
-
-    def uuid(self, element):
-        if isinstance(element, Issue):
-            element.metadata.uuid = self.raw_metadata['uuid']
-            return element
-        elif isinstance(element, IssueComment):
-            element.metadata.parent_uuid = self.raw_metadata['uuid']
-            element.metadata.uuid = Hammer.create_uuid(element.metadata.parent_uuid,
-                                                       element.data['id'])
-            return element
-        elif isinstance(element, IssueReaction):
-            if element.parent_ref == self.raw_metadata['uuid']:
-                element.metadata.parent_uuid = self.raw_metadata['uuid']
-                element.metadata.uuid = Hammer.create_uuid(self.raw_metadata['uuid'],
-                                                           element.data['id'])
-            else:
-                element.metadata.parent_uuid = Hammer.create_uuid(self.raw_metadata['uuid'],
-                                                                  element.parent_ref)
-                element.metadata.uuid = Hammer.create_uuid(self.raw_metadata['uuid'],
-                                                           element.parent_ref,
-                                                           element.data['id'])
-
-            return element
-        else:
-            raise TypeError("Invalid type %s", type(element))
+            yield reaction
+            yield actor
 
     def __parse_identity(self, data):
         # John Smith <john.smith@bitergia.com>
