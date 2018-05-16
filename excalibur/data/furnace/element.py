@@ -33,8 +33,6 @@ def json_date_handler(obj):
 
 class ElementMetadata:
     def __init__(self):
-        self.uuid = None
-        self.parent_uuid = None
         self.raw_uuid = None
         self.perceval_updated_on_ts = None
         self.model_version = None
@@ -50,8 +48,6 @@ class ElementMetadata:
 
     def to_dict(self):
         obj = {
-            'uuid': self.uuid,
-            'parent_uuid': self.parent_uuid,
             'raw_uuid': self.raw_uuid,
             'perceval_updated_on_ts': self.perceval_updated_on_ts,
             'model_version': self.model_version,
@@ -73,11 +69,14 @@ class Element:
         self.metadata = {}
         self.data = {}
         self.data_ext = {}
-        self.parent_ref = None
+        self.uuid = None
+        self.parent_uuid = None
 
     def __str__(self):
         obj = {
             "metadata": self.metadata.to_dict(),
+            "uuid": self.uuid,
+            "parent_uuid": self.parent_uuid,
             "data": self.data,
             "data_ext": self.data_ext
         }
@@ -110,6 +109,11 @@ class IssueComment(Element):
         super().__init__()
 
 
+class IssueJournal(Element):
+    def __init__(self):
+        super().__init__()
+
+
 class IssueReaction(Element):
     def __init__(self):
         super().__init__()
@@ -121,3 +125,8 @@ class User(Element):
         self.data['username'] = username
         self.data['email'] = email
         self.data['name'] = name
+
+    def digest(self):
+        return ':'.join([str(self.data['username']),
+                         str(self.data['email']),
+                         str(self.data['name'])])
