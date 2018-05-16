@@ -21,16 +21,22 @@
 
 
 from perceval.backends.core.git import (Git, CATEGORY_COMMIT)
-from perceval.backends.core.github import (GitHub, CATEGORY_ISSUE)
+from perceval.backends.core.github import (GitHub,
+                                           CATEGORY_ISSUE as github_cat)
+from perceval.backends.core.redmine import (Redmine,
+                                            CATEGORY_ISSUE as redmine_cat)
 from excalibur.hammers.git_commit import GitCommitHammer
 from excalibur.hammers.github_issue import GitHubIssueHammer
+from excalibur.hammers.redmine_issue import RedmineIssueHammer
 
 
 def find_hammer(raw_data, raw_metadata):
     if raw_metadata['category'] == CATEGORY_COMMIT and raw_metadata['backend_name'] == Git.__qualname__:
         hammer = GitCommitHammer(raw_data, raw_metadata)
-    elif raw_metadata['category'] == CATEGORY_ISSUE and raw_metadata['backend_name'] == GitHub.__qualname__:
+    elif raw_metadata['category'] == github_cat and raw_metadata['backend_name'] == GitHub.__qualname__:
         hammer = GitHubIssueHammer(raw_data, raw_metadata)
+    elif raw_metadata['category'] == redmine_cat and raw_metadata['backend_name'] == Redmine.__qualname__:
+        hammer = RedmineIssueHammer(raw_data, raw_metadata)
     else:
         raise NotImplementedError("Hammer not found")
 
