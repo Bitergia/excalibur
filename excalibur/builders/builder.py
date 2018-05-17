@@ -39,8 +39,8 @@ class Builder():
     def _process_metadata(self):
         metadata = RefinedMetadata()
         # raw metadata
-        metadata.uuid = self.element.metadata.uuid
-        metadata.parent_uuid = self.element.metadata.parent_uuid
+        metadata.uuid = self.element.uuid
+        metadata.parent_uuid = self.element.parent_uuid
         metadata.raw_uuid = self.element.metadata.raw_uuid
         metadata.perceval_updated_on_ts = self.element.metadata.perceval_updated_on_ts
         metadata.model_version = self.element.metadata.model_version
