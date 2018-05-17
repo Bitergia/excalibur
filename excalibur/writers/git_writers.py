@@ -34,6 +34,7 @@ from elasticsearch import helpers
     #
     #     return file
 from excalibur.data.spitfire.alloy import RefinedCommit, RefinedFile
+from excalibur.utils import epoch_to_millis
 
 
 class ElasticWriter():
@@ -68,18 +69,18 @@ class GitCommitElasticWriter(ElasticWriter):
         flat_commit['uuid'] = commit.metadata.uuid
         flat_commit['parent_uuid'] = commit.metadata.parent_uuid
         flat_commit['raw_uuid'] = commit.metadata.raw_uuid
-        flat_commit['perceval_updated_on_ts'] = commit.metadata.perceval_updated_on_ts
+        flat_commit['perceval_updated_on_ts'] = epoch_to_millis(commit.metadata.perceval_updated_on_ts)
         flat_commit['model_version'] = commit.metadata.model_version
         flat_commit['type'] = commit.metadata.type
         flat_commit['subtype'] = commit.metadata.subtype
         flat_commit['origin'] = commit.metadata.origin
         flat_commit['tag'] = commit.metadata.tag
         flat_commit['backend_version'] = commit.metadata.backend_version
-        flat_commit['retrieval_ts'] = commit.metadata.retrieval_ts
-        flat_commit['processed_ts'] = commit.metadata.processed_ts
+        flat_commit['retrieval_ts'] = epoch_to_millis(commit.metadata.retrieval_ts)
+        flat_commit['processed_ts'] = epoch_to_millis(commit.metadata.processed_ts.timestamp())
         flat_commit['arthur_job_id'] = commit.metadata.arthur_job_id
-        flat_commit['grimoire_creation_date'] = commit.metadata.grimoire_creation_date
-        flat_commit['refinement_ts'] = commit.metadata.refinement_ts
+        flat_commit['grimoire_creation_date'] = epoch_to_millis(commit.metadata.grimoire_creation_date)
+        flat_commit['refinement_ts'] = epoch_to_millis(commit.metadata.refinement_ts.timestamp())
 
         # Identities
         flat_commit['author_bot'] = commit.author.bot
@@ -89,7 +90,7 @@ class GitCommitElasticWriter(ElasticWriter):
         flat_commit['author_user_name'] = commit.author.user_name
         flat_commit['author_uuid'] = commit.author.uuid
         flat_commit['author_domain'] = commit.author.domain
-        flat_commit['author_date'] = commit.author_date
+        flat_commit['author_date'] = epoch_to_millis(commit.author_date)
         # TODO extract timezone from dateutil.tz.tz.tzoffset
         flat_commit['author_tz'] = str(commit.author_tz)
         flat_commit['author_last_action_date'] = commit.author.last_action_date
@@ -102,7 +103,7 @@ class GitCommitElasticWriter(ElasticWriter):
         flat_commit['committer_user_name'] = commit.committer.user_name
         flat_commit['committer_uuid'] = commit.committer.uuid
         flat_commit['committer_domain'] = commit.committer.domain
-        flat_commit['committer_date'] = commit.committer_date
+        flat_commit['committer_date'] = epoch_to_millis(commit.committer_date)
         # TODO extract timezone from dateutil.tz.tz.tzoffset
         flat_commit['committer_tz'] = str(commit.committer_tz)
         flat_commit['committer_last_action_date'] = commit.committer.last_action_date
@@ -138,18 +139,18 @@ class GitFileElasticWriter(ElasticWriter):
         flat_file['uuid'] = file.metadata.uuid
         flat_file['parent_uuid'] = file.metadata.parent_uuid
         flat_file['raw_uuid'] = file.metadata.raw_uuid
-        flat_file['perceval_updated_on_ts'] = file.metadata.perceval_updated_on_ts
+        flat_file['perceval_updated_on_ts'] = epoch_to_millis(file.metadata.perceval_updated_on_ts)
         flat_file['model_version'] = file.metadata.model_version
         flat_file['type'] = file.metadata.type
         flat_file['subtype'] = file.metadata.subtype
         flat_file['origin'] = file.metadata.origin
         flat_file['tag'] = file.metadata.tag
         flat_file['backend_version'] = file.metadata.backend_version
-        flat_file['retrieval_ts'] = file.metadata.retrieval_ts
-        flat_file['processed_ts'] = file.metadata.processed_ts
+        flat_file['retrieval_ts'] = epoch_to_millis(file.metadata.retrieval_ts)
+        flat_file['processed_ts'] = epoch_to_millis(file.metadata.processed_ts.timestamp())
         flat_file['arthur_job_id'] = file.metadata.arthur_job_id
-        flat_file['grimoire_creation_date'] = file.metadata.grimoire_creation_date
-        flat_file['refinement_ts'] = file.metadata.refinement_ts
+        flat_file['grimoire_creation_date'] = epoch_to_millis(file.metadata.grimoire_creation_date)
+        flat_file['refinement_ts'] = epoch_to_millis(file.metadata.refinement_ts.timestamp())
 
         # Identities
         flat_file['author_bot'] = commit.author.bot
@@ -159,7 +160,7 @@ class GitFileElasticWriter(ElasticWriter):
         flat_file['author_user_name'] = commit.author.user_name
         flat_file['author_uuid'] = commit.author.uuid
         flat_file['author_domain'] = commit.author.domain
-        flat_file['author_date'] = commit.author_date
+        flat_file['author_date'] = epoch_to_millis(commit.author_date)
         # TODO extract timezone from dateutil.tz.tz.tzoffset
         flat_file['author_tz'] = str(commit.author_tz)
         flat_file['author_last_action_date'] = commit.author.last_action_date
@@ -172,7 +173,7 @@ class GitFileElasticWriter(ElasticWriter):
         flat_file['committer_user_name'] = commit.committer.user_name
         flat_file['committer_uuid'] = commit.committer.uuid
         flat_file['committer_domain'] = commit.committer.domain
-        flat_file['committer_date'] = commit.committer_date
+        flat_file['committer_date'] = epoch_to_millis(commit.committer_date)
         # TODO extract timezone from dateutil.tz.tz.tzoffset
         flat_file['committer_tz'] = str(commit.committer_tz)
         flat_file['committer_last_action_date'] = commit.committer.last_action_date
