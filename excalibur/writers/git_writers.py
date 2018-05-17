@@ -111,13 +111,14 @@ class GitCommitElasticWriter(ElasticWriter):
         # Project
         flat_commit['project'] = commit.project
         # Commit
-        flat_commit['added_lines'] = commit.added_lines
-        flat_commit['removed_lines'] = commit.removed_lines
-        flat_commit['changed_lines'] = commit.changed_lines
+        # TODO: rename these keys and rename them in panels too
+        flat_commit['lines_added'] = commit.added_lines
+        flat_commit['lines_removed'] = commit.removed_lines
+        flat_commit['lines_changed'] = commit.changed_lines
         flat_commit['nfiles'] = commit.nfiles
         flat_commit['hash'] = commit.hash
         flat_commit['message'] = commit.message
-        flat_commit['is_merge'] = commit.is_merge
+        flat_commit['is_merge'] = 1 if commit.is_merge else 0
 
         return flat_commit
 

@@ -46,26 +46,22 @@ class CommitBuilder(Builder):
         commit.removed_lines = self.element.data_ext['removed_lines']
         commit.changed_lines = self.element.data_ext['changed_lines']
         # TODO same as above's TODO
-        commit.author = self.__process_identity(self.element.data['Author']['name'],
-                                                self.element.data['Author']['email'],
-                                                self.element.data['Author']['username'])
-        commit.author_date = self.element.data['AuthorDate']['date']
-        commit.author_tz = self.element.data['AuthorDate']['tz']
+        commit.author = self.__process_identity(self.element.data['author_data']['name'],
+                                                self.element.data['author_data']['email'],
+                                                self.element.data['author_data']['username'])
+        commit.author_date = self.element.data['author_date']['date']
+        commit.author_tz = self.element.data['author_date']['tz']
         # TODO same as above's TODO
-        commit.committer = self.__process_identity(self.element.data['Commit']['name'],
-                                                   self.element.data['Commit']['email'],
-                                                   self.element.data['Commit']['username'])
-        commit.committer_date = self.element.data['CommitDate']['date']
-        commit.committer_tz = self.element.data['CommitDate']['tz']
+        commit.committer = self.__process_identity(self.element.data['committer_data']['name'],
+                                                   self.element.data['committer_data']['email'],
+                                                   self.element.data['committer_data']['username'])
+        commit.committer_date = self.element.data['commit_date']['date']
+        commit.committer_tz = self.element.data['commit_date']['tz']
 
-        nfiles = 0
-        for file_action in self.element.data['files']:
-            if 'action' in file_action and 'file' in file_action:
-                nfiles = nfiles + 1
+        # TODO: rename 'nfiles' to a better name
+        commit.nfiles = self.element.data_ext['action_files']
 
-        commit.nfiles = nfiles
-
-        commit.hash = self.element.data['commit']
+        commit.hash = self.element.data['hash']
         commit.message = self.element.data['message']
         commit.is_merge = 'Merge' in self.element.data
 

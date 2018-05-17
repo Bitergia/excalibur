@@ -76,6 +76,8 @@ class GitCommitHammer(Hammer):
     def modelize(self, element):
         if isinstance(element, Commit):
             action_files = self.raw_data['files']
+
+            element.data_ext['action_files'] = len([action for action in action_files if 'action' in action])
             element.data_ext['added_lines'] = sum(
                 [int(action['added']) for action in action_files if 'added' in action])
             element.data_ext['removed_lines'] = sum(
@@ -83,6 +85,7 @@ class GitCommitHammer(Hammer):
             element.data_ext['changed_lines'] = element.data_ext['added_lines'] + element.data_ext['removed_lines']
             element.data_ext['num_files'] = len(action_files)
             element.data_ext['is_merge'] = len(self.raw_data['parents']) > 1
+
             return element
         elif isinstance(element, CommitAction):
             element.data_ext['changed_lines'] = int(element.data['added']) + int(element.data['removed'])
