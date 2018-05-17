@@ -30,6 +30,7 @@ from perceval.backends.core.git import Git
 from excalibur.data.furnace.element import Commit, CommitAction
 from excalibur.kilgh import Kilgh
 from excalibur.tom import Tom
+from excalibur.tongs import Tongs
 from excalibur.writers.git_writers import GitCommitElasticWriter, GitFileElasticWriter
 
 
@@ -64,6 +65,11 @@ def main():
     for item in tom.process(raw_items):
         print(item)
         items.append(item)
+
+    print("\nLOAD IDENTITIES\n")
+
+    tongs = Tongs()
+    items = tongs.process(items)
 
     print("\nREFINE ITEMS\n")
 
