@@ -43,6 +43,12 @@ class TomError(BaseError):
     message = "%(cause)s"
 
 
+class TongsError(BaseError):
+    """Generic error for Tongs objects"""
+
+    message = "%(cause)s"
+
+
 class HammerError(BaseError):
     """Generic error for Hammer objects"""
 
