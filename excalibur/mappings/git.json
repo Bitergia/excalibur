@@ -1,0 +1,311 @@
+{
+    "mappings": {
+        "items": {
+            "dynamic_templates": [{
+                "notanalyzed": {
+                    "match": "*",
+                    "match_mapping_type": "string",
+                    "mapping": {
+                        "index": "not_analyzed",
+                        "type": "string"
+                    }
+                }
+            }],
+            "properties": {
+                "Author": {
+                    "type": "keyword"
+                },
+                "Author_bot": {
+                    "type": "boolean"
+                },
+                "Author_domain": {
+                    "type": "keyword"
+                },
+                "Author_gender": {
+                    "type": "keyword"
+                },
+                "Author_gender_acc": {
+                    "type": "long"
+                },
+                "Author_id": {
+                    "type": "keyword"
+                },
+                "Author_name": {
+                    "type": "keyword"
+                },
+                "Author_org_name": {
+                    "type": "keyword"
+                },
+                "Author_user_name": {
+                    "type": "keyword"
+                },
+                "Author_uuid": {
+                    "type": "keyword"
+                },
+                "Commit_bot": {
+                    "type": "boolean"
+                },
+                "Commit_domain": {
+                    "type": "keyword"
+                },
+                "Commit_gender": {
+                    "type": "keyword"
+                },
+                "Commit_gender_acc": {
+                    "type": "long"
+                },
+                "Commit_id": {
+                    "type": "keyword"
+                },
+                "Commit_name": {
+                    "type": "keyword"
+                },
+                "Commit_org_name": {
+                    "type": "keyword"
+                },
+                "Commit_user_name": {
+                    "type": "keyword"
+                },
+                "Commit_uuid": {
+                    "type": "keyword"
+                },
+                "Committer": {
+                    "type": "keyword"
+                },
+                "Signed-off-by": {
+                    "type": "keyword"
+                },
+                "Signed-off-by_number": {
+                    "type": "long"
+                },
+                "_item_id": {
+                    "type": "keyword"
+                },
+                "author_bot": {
+                    "type": "boolean"
+                },
+                "author_date": {
+                    "type": "date"
+                },
+                "author_domain": {
+                    "type": "keyword"
+                },
+                "author_gender": {
+                    "type": "keyword"
+                },
+                "author_gender_acc": {
+                    "type": "long"
+                },
+                "author_id": {
+                    "type": "keyword"
+                },
+                "author_max_date": {
+                    "type": "date"
+                },
+                "author_min_date": {
+                    "type": "date"
+                },
+                "author_name": {
+                    "type": "keyword"
+                },
+                "author_org_name": {
+                    "type": "keyword"
+                },
+                "author_user_name": {
+                    "type": "keyword"
+                },
+                "author_uuid": {
+                    "type": "keyword"
+                },
+                "authors": {
+                    "type": "keyword"
+                },
+                "authors_signed_off": {
+                    "type": "keyword"
+                },
+                "committer_bot": {
+                    "type": "boolean"
+                },
+                "committer_id": {
+                    "type": "keyword"
+                },
+
+                "commit_date": {
+                    "type": "date"
+                },
+                "committer_domain": {
+                    "type": "keyword"
+                },
+                "committer_name": {
+                    "type": "keyword"
+                },
+                "committer_org_name": {
+                    "type": "keyword"
+                },
+                "committer_user_name": {
+                    "type": "keyword"
+                },
+                "committer_uuid": {
+                    "type": "keyword"
+                },
+                "committer_date": {
+                    "type": "date"
+                },
+
+                "files": {
+                    "type": "long"
+                },
+                "git_author_domain": {
+                    "type": "keyword"
+                },
+                "git_uuid": {
+                    "type": "keyword"
+                },
+                "github_repo": {
+                    "type": "keyword"
+                },
+                "grimoire_creation_date": {
+                    "type": "date"
+                },
+                "hash": {
+                    "type": "keyword"
+                },
+                "hash_short": {
+                    "type": "keyword"
+                },
+                "is_git_commit": {
+                    "type": "long"
+                },
+                "is_git_commit_multi_author": {
+                    "type": "long"
+                },
+                "is_git_commit_signed_off": {
+                    "type": "long"
+                },
+                "lines_added": {
+                    "type": "long"
+                },
+                "lines_changed": {
+                    "type": "long"
+                },
+                "lines_removed": {
+                    "type": "long"
+                },
+                "message": {
+                    "type": "keyword"
+                },
+                "message_analyzed": {
+                    "type": "text"
+                },
+                "metadata__enriched_on": {
+                    "type": "date"
+                },
+                "metadata__gelk_backend_name": {
+                    "type": "keyword"
+                },
+                "metadata__gelk_version": {
+                    "type": "keyword"
+                },
+                "metadata__timestamp": {
+                    "type": "date"
+                },
+                "metadata__updated_on": {
+                    "type": "date"
+                },
+
+                "perceval_updated_on_ts" : {
+                    "type": "date"
+                },
+                "model_version": {
+                    "type": "keyword"
+                },
+                "type": {
+                    "type": "keyword"
+                },
+                "subtype": {
+                    "type": "keyword"
+                },
+                "backend_version": {
+                    "type": "keyword"
+                },
+                "retrieval_ts" : {
+                    "type": "date"
+                },
+                "processed_ts" : {
+                    "type": "date"
+                },
+                "refinement_ts" : {
+                    "type": "date"
+                },
+                "arthur_job_id" : {
+                    "type": "keyword"
+                },
+                "author_tz" : {
+                    "type": "keyword"
+                },
+                "author_last_action_date": {
+                    "type": "date"
+                },
+                "author_first_action_date": {
+                    "type": "date"
+                },
+                "committer_tz" : {
+                    "type": "keyword"
+                },
+                "committer_last_action_date": {
+                    "type": "date"
+                },
+                "committer_first_action_date": {
+                    "type": "date"
+                },
+                "is_merge": {
+                    "type": "long"
+                },
+
+
+                "origin": {
+                    "type": "keyword"
+                },
+                "project": {
+                    "type": "keyword"
+                },
+                "project_1": {
+                    "type": "keyword"
+                },
+                "repo_name": {
+                    "type": "keyword"
+                },
+                "tag": {
+                    "type": "keyword"
+                },
+                "time_to_commit_hours": {
+                    "type": "float"
+                },
+                "title": {
+                    "type": "keyword"
+                },
+                "tz": {
+                    "type": "long"
+                },
+                "url_id": {
+                    "type": "keyword"
+                },
+                "utc_author": {
+                    "type": "date"
+                },
+                "utc_commit": {
+                    "type": "date"
+                },
+                "uuid": {
+                    "type": "keyword"
+                },
+                "parent_uuid": {
+                    "type": "keyword"
+                },
+                "raw_uuid": {
+                    "type": "keyword"
+                }
+            }
+        }
+    }
+}
