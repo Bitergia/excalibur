@@ -28,17 +28,18 @@ from excalibur.processors.git_processors import GitProcessor
 def find_builder(element):
 
     if element.metadata.type == Commit.__name__ and \
-       element.metadata.subtype == Git.__qualname__:
+            element.metadata.subtype == Git.__qualname__:
         builder = CommitBuilder(element)
 
     elif element.metadata.type == CommitAction.__name__ and \
-       element.metadata.subtype == Git.__qualname__:
+            element.metadata.subtype == Git.__qualname__:
         builder = FileActionBuilder(element)
 
     else:
         raise NotImplementedError("Builder not found")
 
     return builder
+
 
 class Kilgh:
 
@@ -49,8 +50,6 @@ class Kilgh:
 
     def find_processor(self, element):
         """Return processor for a given element."""
-
-        processor = None
 
         subtype = element.metadata.subtype
         if subtype in self.processors:
@@ -82,7 +81,6 @@ class Kilgh:
                         yield out_item
 
                     # TODO remove refined items from processor as they were already processed and persisted
-
 
             except NotImplementedError as e:
                 print("Ignoring element. Type:", element.metadata.type, "Subtype:", element.metadata.subtype,

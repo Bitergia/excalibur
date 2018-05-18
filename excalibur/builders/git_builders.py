@@ -23,7 +23,7 @@ import re
 from perceval.backends.core.git import Git
 
 from excalibur.data.furnace.element import Commit, CommitAction
-from excalibur.data.spitfire.alloy import RefinedCommit, RefinedMetadata, IdentityData, RefinedFile
+from excalibur.data.spitfire.alloy import RefinedCommit, IdentityData, RefinedFile
 from excalibur.builders.builder import Builder
 
 
@@ -84,6 +84,7 @@ class CommitBuilder(Builder):
     def __process_project(self, repo_name):
         return self.UNKNOWN_VALUE
 
+
 class FileActionBuilder(Builder):
 
     def process(self):
@@ -98,7 +99,6 @@ class FileActionBuilder(Builder):
         file.metadata = self._process_metadata()
 
         filepath = self.element.data.get('file')
-
 
         if filepath:
             file.filepath = filepath

@@ -19,21 +19,6 @@
 #     Alberto Pérez García-Plaza <alpgarcia@bitergia.com>
 #
 from elasticsearch import helpers
-
-    # @classmethod
-    # def process_commit_data(self, file, commit):
-    #     """Add data coming from commit element to the given file"""
-    #     if commit:
-    #         file.author = commit.author
-    #         file.project = commit.project
-    #
-    #         # RefinedFile props
-    #         file.author_date = commit.author_date
-    #         file.committer = commit.committer
-    #         file.committer_date = commit.committer_date
-    #
-    #     return file
-from excalibur.data.spitfire.alloy import RefinedCommit, RefinedFile
 from excalibur.utils import epoch_to_millis
 
 
@@ -126,6 +111,7 @@ class GitCommitElasticWriter(ElasticWriter):
 
         flat_item = self.flatten(refined_item)
         self.write_flat_item(flat_item)
+
 
 class GitFileElasticWriter(ElasticWriter):
 

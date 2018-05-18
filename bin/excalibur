@@ -66,7 +66,6 @@ def main():
     for refined in kilgh.refine(items):
         print(refined)
 
-
     velazquez = Velazquez(kilgh.mock_db)
     velazquez.paint()
 

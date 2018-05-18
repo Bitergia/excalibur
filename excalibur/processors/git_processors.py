@@ -21,7 +21,7 @@
 from excalibur.data.spitfire.alloy import RefinedCommit, RefinedFile
 
 
-class GitProcessor():
+class GitProcessor:
 
     def __init__(self):
         self.commits = {}
@@ -42,7 +42,7 @@ class GitProcessor():
         """A commit or file is considered 'valid' iif all its elements, commit and files, if any,
         have been built and stored"""
 
-        uuid = self.__uuid(item)
+        uuid = self.__common_uuid(item)
 
         valid = False
         if uuid in self.commits:
@@ -54,7 +54,7 @@ class GitProcessor():
 
     def items(self, item):
         """Return all stored items related to the same commit as the given item'"""
-        uuid = self.__uuid(item)
+        uuid = self.__common_uuid(item)
         items = []
 
         if uuid in self.commits:
@@ -69,11 +69,14 @@ class GitProcessor():
         raise NotImplementedError
 
 
-    def __uuid(self, item):
+    def __common_uuid(self, item):
+
         if type(item).__name__ == RefinedCommit.__name__:
             uuid = item.metadata.uuid
 
         elif type(item).__name__ == RefinedFile.__name__:
             uuid = item.metadata.parent_uuid
+        else:
+            raise ValueError("Unrecognized type " + type(item).__name__)
 
         return uuid

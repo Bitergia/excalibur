@@ -23,12 +23,11 @@ from grimoirelab.toolkit.datetime import datetime_utcnow
 from excalibur.data.spitfire.alloy import RefinedMetadata
 
 
-class Builder():
+class Builder:
 
     # TODO dates should be stored in a common format, e.g. grimoire_creation_date vs refinement_ts
 
     UNKNOWN_VALUE = 'Unknown'
-
 
     def __init__(self, element):
         self.element = element
