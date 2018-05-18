@@ -22,8 +22,8 @@
 import configparser
 import logging
 
-from sortinghat.api import (add_identity,
-                            edit_profile)
+from sortinghat import api
+from sortinghat import utils
 from sortinghat.db.database import Database
 from sortinghat.exceptions import AlreadyExistsError, WrappedValueError
 
@@ -70,19 +70,19 @@ class Tongs:
             raise TongsError(cause=msg)
 
     def __add_identity(self, elem):
+        email = elem.data['email']
+        name = elem.data['name']
+        username = elem.data['username']
+        source = elem.metadata.subtype
         try:
-            email = elem.data['email']
-            name = elem.data['name']
-            username = elem.data['username']
-            source = elem.metadata.subtype
-            uuid = add_identity(self.db, source, email, name, username)
+            uuid = api.add_identity(self.db, source, email, name, username)
 
             profile = {"name": name if name else username,
                        "email": email}
 
-            edit_profile(self.db, uuid, **profile)
+            api.edit_profile(self.db, uuid, **profile)
         except AlreadyExistsError as ex:
-            _ = ex.uuid
+            uuid = ex.uuid
         except WrappedValueError:
             logger.warning("Trying to add a None identity. Ignoring it. uuid: %s, parent_uuid: %s",
                            elem.uuid, elem.parent_uuid)
@@ -95,3 +95,16 @@ class Tongs:
                            elem.data['email'], elem.data['name'], elem.data['username'],
                            elem.uuid, elem.parent_uuid)
             raise TongsError(cause=str(ex))
+
+        return uuid
+
+    def retrieve_unique_identity(self, source, name, email, username):
+        uuid = utils.uuid(source, email, name, username)
+        unique_identity = api.unique_identities(self.db, uuid=uuid)[0]
+
+        if not unique_identity.profile:
+            msg = "No profile for uuid (name: %s, email: %s, username: %s" % (uuid, name, email, username)
+            logger.error(msg)
+            raise TongsError(cause=msg)
+
+        return unique_identity
