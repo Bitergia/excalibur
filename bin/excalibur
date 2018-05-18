@@ -23,14 +23,8 @@
 import json
 import sys
 
-import pkg_resources
-from elasticsearch import Elasticsearch
-from perceval.backends.core.git import Git
-
-from excalibur.data.furnace.element import Commit, CommitAction
 from excalibur.kilgh import Kilgh
 from excalibur.tom import Tom
-from excalibur.writers.git_writers import GitCommitElasticWriter, GitFileElasticWriter
 from excalibur.writers.write_manager import Velazquez
 
 

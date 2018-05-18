@@ -21,7 +21,6 @@
 #
 
 import json
-import sys
 
 import pkg_resources
 from elasticsearch import Elasticsearch
