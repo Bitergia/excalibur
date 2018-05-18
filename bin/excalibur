@@ -31,6 +31,7 @@ from excalibur.data.furnace.element import Commit, CommitAction
 from excalibur.kilgh import Kilgh
 from excalibur.tom import Tom
 from excalibur.writers.git_writers import GitCommitElasticWriter, GitFileElasticWriter
+from excalibur.writers.write_manager import Velazquez
 
 
 def read_items():
@@ -71,56 +72,14 @@ def main():
     for refined in kilgh.refine(items):
         print(refined)
 
-    write_manager_mock(kilgh.mock_db)
+
+    velazquez = Velazquez(kilgh.mock_db)
+    velazquez.paint()
 
     print("\n-------\nSUMMARY\n-------\n")
     print("Items:\t\t", len(items))
     print("Refined:\t", len(kilgh.mock_db))
     print("Ignored:\t", kilgh.ignored)
-
-
-def write_manager_mock(mock_db):
-
-    # TODO connections should depend on writing config
-    # Creating connections
-    commit_out_index = 'git_excalibur'
-    file_out_index = 'git_excalibur_aoc'
-    es_conn = Elasticsearch(["http://localhost:9200"], timeout=100)
-
-    init_es_index(commit_out_index, es_conn, 'mappings/git.json')
-    init_es_index(file_out_index, es_conn, 'mappings/git_aoc.json')
-
-    eswriter_commit = GitCommitElasticWriter(es_conn, commit_out_index)
-    eswriter_file = GitFileElasticWriter(es_conn, file_out_index)
-
-    for refined_item in mock_db.values():
-        # TODO writers should be activated depending on config
-        if refined_item.metadata.type == Commit.__name__ and \
-                refined_item.metadata.subtype == Git.__qualname__:
-            eswriter_commit.write_item(refined_item)
-
-        elif refined_item.metadata.type == CommitAction.__name__ and \
-                refined_item.metadata.subtype == Git.__qualname__:
-            refined_commit = mock_db.get(refined_item.metadata.parent_uuid)
-            eswriter_file.write(refined_item, refined_commit)
-
-        else:
-            print("Don't know how to write that", refined_item.metadata.subtype,
-                  refined_item.metadata.type)
-
-
-def init_es_index(index_name, es_conn, mapping_path):
-    exists_index = es_conn.indices.exists(index=index_name)
-    # TODO support incremental mode instead of deleting index by default
-    if exists_index:
-        # Initialize out index
-        es_conn.indices.delete(index_name, ignore=[400, 404])
-    # TODO put mapping
-    mappings_file = pkg_resources.resource_filename('excalibur', mapping_path)
-    # Read Mapping
-    with open(mappings_file) as f:
-        mapping = f.read()
-    es_conn.indices.create(index_name, body=mapping)
 
 
 if __name__ == '__main__':
