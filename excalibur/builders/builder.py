@@ -21,6 +21,7 @@
 from grimoirelab.toolkit.datetime import datetime_utcnow
 
 from excalibur.data.spitfire.alloy import RefinedMetadata
+from excalibur.tongs import Tongs
 
 
 class Builder():
@@ -29,8 +30,8 @@ class Builder():
 
     UNKNOWN_VALUE = 'Unknown'
 
-
     def __init__(self, element):
+        self.tongs = Tongs()
         self.element = element
 
     def process(self):
@@ -57,3 +58,9 @@ class Builder():
         metadata.refinement_ts = datetime_utcnow()
 
         return metadata
+
+    def _get_unique_identity(self, name, email, username):
+        return self.tongs.retrieve_unique_identity(self.element.metadata.subtype,
+                                                   name,
+                                                   email,
+                                                   username)

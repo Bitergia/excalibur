@@ -68,6 +68,8 @@ class CommitBuilder(Builder):
         return commit
 
     def __process_identity(self, name, email, username):
+        unique_identity = self._get_unique_identity(name, email, username)
+
         identity_data = IdentityData()
         identity_data.bot = False
         identity_data.id = None
