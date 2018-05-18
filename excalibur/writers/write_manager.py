@@ -80,6 +80,7 @@ class Velazquez():
 
         # Load panel
         self.load_panel('panels/git_panel.json')
+        self.load_panel('panels/git_areas_of_code.json')
 
         print("[Velázquez] Exhibition ready for visitors")
 
